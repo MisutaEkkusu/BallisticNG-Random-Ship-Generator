@@ -98,9 +98,10 @@ xyzbounds_t ModelBounds(mesh_t mesh){
 
 
 uint32_t* GenerateUVPolyGroup(mesh_t* shipmesh,texType_t type, uint16_t* n_poly_added){
-	uint16_t i = 0, j = 0;
+	uint32_t i = 0, j = 0;
 	uint32_t* UVpolygroup = NULL;
 	(*n_poly_added) = 0;
+	
 	
 	for(i=0;i<shipmesh->ntris;i++){
 
@@ -111,7 +112,12 @@ uint32_t* GenerateUVPolyGroup(mesh_t* shipmesh,texType_t type, uint16_t* n_poly_
 		}
 	}
 	
-	UVpolygroup = malloc((*n_poly_added)*sizeof(uint32_t));
+	if(*n_poly_added==0){
+		printf("No triangles found for texture type %d\n",type);
+		return NULL;
+	}
+	
+	UVpolygroup = calloc((*n_poly_added),sizeof(uint32_t));
 	
 	if(UVpolygroup == NULL){
 		fprintf(stderr,"ERROR ALLOC\n");
@@ -135,7 +141,7 @@ uint32_t* GenerateUVPolyGroup(mesh_t* shipmesh,texType_t type, uint16_t* n_poly_
 
 uint32_t* GenerateSubGroup(mesh_t* shipmesh, uint32_t* UVgroup, uint16_t nuvpolys ,partType_t ID, uint16_t* n_poly_added){
 	
-	uint16_t i = 0, j = 0;
+	uint32_t i = 0, j = 0;
 	uint32_t* UVpolygroup = NULL;
 	(*n_poly_added) = 0;
 	
@@ -147,8 +153,11 @@ uint32_t* GenerateSubGroup(mesh_t* shipmesh, uint32_t* UVgroup, uint16_t nuvpoly
 			
 		}
 	}
-	
-	UVpolygroup = malloc((*n_poly_added)*sizeof(uint32_t));
+	if(*n_poly_added==0){
+		printf("No triangles found for polysubgrp %d\n",ID);
+		return NULL;
+	}
+	UVpolygroup = calloc((*n_poly_added),sizeof(uint32_t));
 	
 	if(UVpolygroup == NULL){
 		fprintf(stderr,"ERROR ALLOC\n");
@@ -233,7 +242,7 @@ uvProject_t GetBestUVProjection(mesh_t* mesh, uint32_t* polygroup, uint16_t npol
 	uint16_t i = 0, j = 0, areaIndx = 0;
 	
 	for(i=0;i<npolys;i++){
-		
+
 		v1 = *(mesh->polys[polygroup[i]].vptr[0]);
 		v2 = *(mesh->polys[polygroup[i]].vptr[1]);
 		v3 = *(mesh->polys[polygroup[i]].vptr[2]);
@@ -247,7 +256,7 @@ uvProject_t GetBestUVProjection(mesh_t* mesh, uint32_t* polygroup, uint16_t npol
 			totalArea[j] += triArea[j];
 		
 	}
-	
+
 	for(i=0;i<3;i++){
 		
 		if(totalArea[i]>maxArea){
@@ -387,43 +396,42 @@ void ProjectMapUVGroup(mesh_t* shipmesh, uint32_t* uvgrp, uint16_t npolys, uvPro
 	float u0, v0, usz, vsz, uscale = 0.95f, vscale = 0.95f;
 	float du = 1.0f/TEXTURE_WIDTH, dv = 1.0f/TEXTURE_HEIGHT;
 	xyzbounds_t uvbounds = {0};
-	
+
 	switch(shipmesh->polys[uvgrp[0]].type){
 			
 		case DIFFUSE1:
-				u0=DIFFUSE1_UOFFSET*du; v0=DIFFUSE1_VOFFSET*dv;
-				usz=DIFFUSE1_USIZE*du; vsz=DIFFUSE1_VSIZE*dv;
+			u0=DIFFUSE1_UOFFSET*du; v0=DIFFUSE1_VOFFSET*dv;
+			usz=DIFFUSE1_USIZE*du; vsz=DIFFUSE1_VSIZE*dv;
 
 			break;
 		
 		case DIFFUSE2:
-				u0=DIFFUSE2_UOFFSET*du; v0=DIFFUSE2_VOFFSET*dv;
-				usz=DIFFUSE2_USIZE*du; vsz=DIFFUSE2_VSIZE*dv;
+			u0=DIFFUSE2_UOFFSET*du; v0=DIFFUSE2_VOFFSET*dv;
+			usz=DIFFUSE2_USIZE*du; vsz=DIFFUSE2_VSIZE*dv;
 
 			break;
 			
 		case BOTTOM:
-				u0=BOTTOM_UOFFSET*du; v0=BOTTOM_VOFFSET*dv;
-				usz=BOTTOM_USIZE*du; vsz=BOTTOM_VSIZE*dv;
+			u0=BOTTOM_UOFFSET*du; v0=BOTTOM_VOFFSET*dv;
+			usz=BOTTOM_USIZE*du; vsz=BOTTOM_VSIZE*dv;
 
 			break;
 			
 		case MECHANICS:
-				u0=MECHANICS_UOFFSET*du; v0=MECHANICS_VOFFSET*dv;
-				usz=MECHANICS_USIZE*du; vsz=MECHANICS_VSIZE*dv;
+			u0=MECHANICS_UOFFSET*du; v0=MECHANICS_VOFFSET*dv;
+			usz=MECHANICS_USIZE*du; vsz=MECHANICS_VSIZE*dv;
 
 			break;
 			
 		case GLASS:
-				u0=GLASS_UOFFSET*du; v0=GLASS_VOFFSET*dv;
-				usz=GLASS_USIZE*du; vsz=GLASS_VSIZE*dv;
-				
-
+			u0=GLASS_UOFFSET*du; v0=GLASS_VOFFSET*dv;
+			usz=GLASS_USIZE*du; vsz=GLASS_VSIZE*dv;
+			
 			break;
 			
 		case EXHAUST:
-				u0=EXHAUST_UOFFSET*du; v0=EXHAUST_VOFFSET*dv;
-				usz=EXHAUST_USIZE*du; vsz=EXHAUST_VSIZE*dv;
+			u0=EXHAUST_UOFFSET*du; v0=EXHAUST_VOFFSET*dv;
+			usz=EXHAUST_USIZE*du; vsz=EXHAUST_VSIZE*dv;
 
 			break;
 			
@@ -433,8 +441,8 @@ void ProjectMapUVGroup(mesh_t* shipmesh, uint32_t* uvgrp, uint16_t npolys, uvPro
 			break;
 			
 		case INTAKE:
-				u0=INTAKE_UOFFSET*du; v0=INTAKE_VOFFSET*dv;
-				usz=INTAKE_USIZE*du; vsz=INTAKE_VSIZE*dv;
+			u0=INTAKE_UOFFSET*du; v0=INTAKE_VOFFSET*dv;
+			usz=INTAKE_USIZE*du; vsz=INTAKE_VSIZE*dv;
 		
 			break;
 	}
@@ -478,8 +486,11 @@ void GenerateUVs(mesh_t* shipmesh){
 		
 		//Group faces that share the same texture
 		UVpolygroup = GenerateUVPolyGroup(shipmesh,i, &nUVpolys);
+		
+		if(UVpolygroup == NULL)
+			continue;
+		
 		if(i == DIFFUSE1 || i == DIFFUSE2){
-			
 
 			for(j=0;j<NUMSUBPARTS;j++){
 				subgroup = GenerateSubGroup(shipmesh,UVpolygroup,nUVpolys,j,&nSubpolys);
@@ -495,6 +506,7 @@ void GenerateUVs(mesh_t* shipmesh){
 				//Do projection mapping	
 				ProjectMapUVGroup(shipmesh,subgroup,nSubpolys,UVprojectplane,UVpolygroupbounds);
 				//clean up
+				
 				free(subgroup);
 				subgroup = NULL;
 			}
@@ -510,6 +522,8 @@ void GenerateUVs(mesh_t* shipmesh){
 			ProjectMapUVGroup(shipmesh,UVpolygroup,nUVpolys,UVprojectplane,UVpolygroupbounds);
 		}
 		//clean up
+
+		
 		free(UVpolygroup);
 		UVpolygroup = NULL;
 		
