@@ -4,7 +4,7 @@ Generates random ships in .obj format in the Wipeout 1 form factor.
 
 Major immediate to-dos:
 
--Fix auto uv mapping;
+-Fix auto uv mapping (this is also where the Windows build crashes);
 
 -Add dual hulls;
 
