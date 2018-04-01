@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = main.c prim.c shipgenmaths.c UVOPS.c
+OBJS = main.c prim.c shipgenmaths.c UVOPS.c SHIPONE.c
 
 #CC specifies which compiler
 CC = gcc

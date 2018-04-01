@@ -5,7 +5,7 @@ float lerp(float t, float a, float b){
 	/*
 		Linear Interpolation
 	*/
-	return (b-a)*t + a;
+	return a*(1-t) + b*t;
 	
 }
 
