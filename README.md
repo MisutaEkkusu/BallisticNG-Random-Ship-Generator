@@ -8,5 +8,7 @@ Major immediate to-dos:
 
 -Add dual hulls;
 
+-Pray that, at least, most of the functions for single hulls work on dual hulls without breaking everything.
+
 
 Right now the software runs as a standalone program, but the idea is to make it a static or dynamic/shared library.
