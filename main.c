@@ -13,6 +13,7 @@ int main(int argc, char* argv[]){
 	MergeMesh(ship.nose, ship.mid, &ship.obj,0);
 	MergeMesh(ship.obj, ship.tail, &ship.obj,0);
 	MergeMesh(ship.obj, ship.wings, &ship.obj,1);
+	GenerateMeshNormals(&ship.obj);
 	GenerateUVs(&ship.obj);
 	ShipToObj(ship);
 	//RenderLoop();

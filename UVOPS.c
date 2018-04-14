@@ -475,13 +475,6 @@ void GenerateUVs(mesh_t* shipmesh){
 	
 	printf("Generating UV coordinates...\n");
 	
-	for(i=0;i<shipmesh->ntris;i++){
-		for(j=0;j<3;j++)
-			shipmesh->polys[i].vptr[j] = &shipmesh->verts[shipmesh->polys[i].vert[j]]; //get the pointers to the vertex data
-			
-	}
-	
-
 	for(i=0;i<NUMTEXTURES;i++){ //i takes the role of texture type
 		
 		//Group faces that share the same texture

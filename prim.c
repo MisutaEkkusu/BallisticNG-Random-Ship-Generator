@@ -3,7 +3,7 @@
 void MeshToObj(mesh_t* mesh, char* filename){
 	
 	FILE* fp=NULL;
-	uint32_t i=0;
+	uint32_t i=0, j=0;
 	fp=fopen(filename,"w+");
 	
 	if(fp==NULL){
@@ -12,21 +12,37 @@ void MeshToObj(mesh_t* mesh, char* filename){
 	}
 	printf("Saving...\n");
 	fprintf(fp,"#Made with Xpand's RNG ship generator v1.0\n");
+	
 	for(i=0;i<mesh->nverts;i++){
 		//fprintf(fp,"#Vertex %d (or %d)\n",i,i+1);
 		fprintf(fp,"v %f %f %f\n",-mesh->verts[i].x,mesh->verts[i].z,-mesh->verts[i].y);
 	}
 	fprintf(fp,"#%d Vertices\n",mesh->nverts);
+	
+	for(i=0;i<mesh->nnorms;i++){
+		fprintf(fp,"vn %f %f %f\n",mesh->vnorms[i].x,mesh->vnorms[i].y,mesh->vnorms[i].z);
+		
+	}
+	fprintf(fp,"#%d Normals\n",mesh->nnorms);
+	
 	for(i=0;i<mesh->nuvs;i++){
 		fprintf(fp,"vt %f %f\n",mesh->uvs[i].u,1.0f-mesh->uvs[i].v);
 		
 	}
 	fprintf(fp,"#%d UVs\n",mesh->nuvs);
+	
 	fprintf(fp,"g RNGShip\n");
 	for(i=0;i<mesh->ntris;i++){
-		//fprintf(fp,"#Triangle %d (or %d)\n",i,i+1);
 		
-		fprintf(fp,"f %d/%d %d/%d %d/%d\n",mesh->polys[i].vert[0]+1,mesh->polys[i].uvindx[0]+1,mesh->polys[i].vert[1]+1,mesh->polys[i].uvindx[1]+1,mesh->polys[i].vert[2]+1,mesh->polys[i].uvindx[2]+1);
+		fprintf(fp,"f ");
+		for(j=0;j<3;j++){
+			
+			fprintf(fp,"%d/%d/%d",mesh->polys[i].vert[j]+1,mesh->polys[i].uvindx[j]+1,mesh->polys[i].vnindx[j]+1);
+			if(j!=2){
+				fprintf(fp," ");
+			}
+		}
+		fprintf(fp,"\n");
 	}
 	fprintf(fp,"#%d Triangles\n",mesh->ntris);
 	fclose(fp);
@@ -207,5 +223,32 @@ uint8_t MergeMesh(mesh_t m1, mesh_t m2, mesh_t* ret, uint8_t noMerge){
 	ret->nquads = 0;
 
 	printf("Done!\n");
+	return 1;
+}
+
+uint8_t GenerateMeshNormals(mesh_t* mesh){
+	
+	uint32_t i = 0, j = 0;
+	
+	mesh->vnorms = malloc(mesh->ntris*sizeof(vert_t)); //one per triangle
+	
+	if(mesh->vnorms == NULL){
+		fprintf(stderr,"FAILED TO ALLOCATE VERT NORMAL MEMORY!\n");
+		exit(-1);
+	}
+	
+	printf("Calculating model normals...\n");
+	
+	for(i=0;i<mesh->ntris;i++){
+		for(j=0;j<3;j++){
+			mesh->polys[i].vptr[j] = &mesh->verts[mesh->polys[i].vert[j]]; //get the pointers to the vertex data
+			mesh->polys[i].vnptr[j] = &mesh->vnorms[i];
+			mesh->polys[i].vnindx[j] = i;
+		}
+		
+		mesh->vnorms[i] = CalcNormalTri(mesh->polys[i]);
+		
+	}
+	mesh->nnorms = mesh->ntris;
 	return 1;
 }

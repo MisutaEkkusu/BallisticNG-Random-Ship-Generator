@@ -209,3 +209,25 @@ float min(mesh_t* mesh, char axis){
 	}
 	return ret;
 }
+
+
+vert_t CalcNormalTri(poly_t tri){
+	
+	vert_t ret = {0.0f};
+	
+	vert_t v1, v2;
+	
+	v1.x = (*tri.vptr[1]).x - (*tri.vptr[0]).x;
+	v1.y = (*tri.vptr[1]).y - (*tri.vptr[0]).y;
+	v1.z = (*tri.vptr[1]).z - (*tri.vptr[0]).z;
+	
+	v2.x = (*tri.vptr[2]).x - (*tri.vptr[0]).x;
+	v2.y = (*tri.vptr[2]).y - (*tri.vptr[0]).y;
+	v2.z = (*tri.vptr[2]).z - (*tri.vptr[0]).z;
+
+	ret.x = v1.y*v2.z - v2.y*v1.z;
+	ret.y = v1.z*v2.x - v2.z*v1.x;
+	ret.z = v1.x*v2.y - v2.x*v1.y;
+	
+	return ret;
+}

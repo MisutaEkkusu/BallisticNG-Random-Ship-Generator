@@ -14,6 +14,6 @@ void MeshToObj(mesh_t* mesh, char* filename);
 void ShipToObj(shipOne_t ship);
 void FreeShip(shipOne_t* ship);
 uint8_t MergeMesh(mesh_t m1, mesh_t m2, mesh_t* ret, uint8_t noMerge);
-
+uint8_t GenerateMeshNormals(mesh_t* mesh);
 
 #endif

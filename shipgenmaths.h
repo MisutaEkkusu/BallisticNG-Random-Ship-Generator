@@ -77,10 +77,11 @@ typedef struct uv{
 typedef struct poly{
 
 	uint16_t vert[4]; //vert[3]==0xFFFF if triangle (deprecated)
-	uint16_t uvindx[3];
+	uint16_t uvindx[3]; //uvs
+	uint16_t vnindx[3]; //vertex normals
 	
 	vert_t* vptr[3];
-	
+	vert_t* vnptr[3];
 	uv_t* uvptr[3];
 	
 	int16_t zbuf;
@@ -97,9 +98,13 @@ typedef struct mesh{
 	uint16_t ntris;
 	uint16_t nquads;
 	uint16_t nuvs;
+	uint16_t nnorms;
 	
 	vert_t *verts;
+	vert_t *vnorms;
+	
 	poly_t *polys;
+	
 	uv_t* uvs;
 	
 }mesh_t;
@@ -128,4 +133,5 @@ void Triangulate(poly_t* tri1, poly_t* tri2, uint16_t v0, uint16_t v1, uint16_t 
 void NGonize(mesh_t *mesh, uint16_t v0i, uint16_t vni, float radius, float angleoffset, float xoffset, float yoffset, float zoffset);
 void TriangleFan(mesh_t *mesh, uint16_t triIndx0, uint16_t vc0, uint16_t v0i, uint16_t vni, uint8_t dir, texType_t type);
 
+vert_t CalcNormalTri(poly_t tri);
 #endif
