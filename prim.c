@@ -12,7 +12,8 @@ void MeshToObj(mesh_t* mesh, char* filename){
 	}
 	printf("Saving...\n");
 	fprintf(fp,"#Made with Xpand's RNG ship generator v1.0\n");
-	
+	fprintf(fp,"mtllib RNGSHIP.mtl\n");
+	fprintf(fp,"o RNGSHIP\n");
 	for(i=0;i<mesh->nverts;i++){
 		//fprintf(fp,"#Vertex %d (or %d)\n",i,i+1);
 		fprintf(fp,"v %f %f %f\n",-mesh->verts[i].x,mesh->verts[i].z,-mesh->verts[i].y);
@@ -31,7 +32,7 @@ void MeshToObj(mesh_t* mesh, char* filename){
 	}
 	fprintf(fp,"#%d UVs\n",mesh->nuvs);
 	
-	fprintf(fp,"g RNGShip\n");
+	fprintf(fp,"usemtl ShipMaterial\ns 1\n");
 	for(i=0;i<mesh->ntris;i++){
 		
 		fprintf(fp,"f ");
