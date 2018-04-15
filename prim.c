@@ -16,12 +16,12 @@ void MeshToObj(mesh_t* mesh, char* filename){
 	fprintf(fp,"o RNGSHIP\n");
 	for(i=0;i<mesh->nverts;i++){
 		//fprintf(fp,"#Vertex %d (or %d)\n",i,i+1);
-		fprintf(fp,"v %f %f %f\n",-mesh->verts[i].x,mesh->verts[i].z,-mesh->verts[i].y);
+		fprintf(fp,"v %f %f %f\n",mesh->verts[i].x,mesh->verts[i].z,mesh->verts[i].y);
 	}
 	fprintf(fp,"#%d Vertices\n",mesh->nverts);
 	
 	for(i=0;i<mesh->nnorms;i++){
-		fprintf(fp,"vn %f %f %f\n",mesh->vnorms[i].x,mesh->vnorms[i].y,mesh->vnorms[i].z);
+		fprintf(fp,"vn %f %f %f\n",-mesh->vnorms[i].x,mesh->vnorms[i].z,-mesh->vnorms[i].y);
 		
 	}
 	fprintf(fp,"#%d Normals\n",mesh->nnorms);
