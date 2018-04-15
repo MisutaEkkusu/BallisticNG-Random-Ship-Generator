@@ -20,7 +20,7 @@ void GenShipOneParams(shipOneParams_t* params){
 	
 	params->wingSpan=0.65f*params->mainWid-(rand()%100)/200.0f;
 	params->wingRoot=2.4f+(rand()%40)/100.0f;
-	params->wingTip=(0.05f+(rand()%50)/100.0f)*params->wingRoot;
+	params->wingTip=(0.03f+(rand()%30)/100.0f)*params->wingRoot;
 	params->wingSweep=40.0f+((rand())%40); //Calculate wingtip y as -SPAN/tan(SWEEP)
 	params->wingDihedral=180.0f/M_PI*atan(params->mainHei/(params->mainWid*0.5f))+5.0f;
 	params->wingPos=-1.3f-(rand()%150)/1000.0f;
