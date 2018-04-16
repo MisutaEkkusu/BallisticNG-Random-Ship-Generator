@@ -11,10 +11,9 @@
 #include <math.h>
 
 typedef enum {STDWING, LERX1, LERX2, LERX3} ShipOneWingType_t;
+typedef enum {CSIMPLE, CCANOPY, CGILLS} ShipOneEngCoverType_t;
 
 typedef struct shipOne{
-	
-	vert_t pos;
 	
 	mesh_t nose;
 	mesh_t mid;
@@ -24,8 +23,6 @@ typedef struct shipOne{
 	mesh_t obj;
 	
 }shipOne_t;
-
-shipOne_t ship;
 
 typedef struct shipOneParams{
 	
@@ -61,8 +58,10 @@ typedef struct shipOneParams{
 	float aBrakeEdgeOffset;
 	
 	ShipOneWingType_t isLongWing;
+	ShipOneEngCoverType_t engCoverType;
 	
 	uint8_t isDualEngine;
+	uint8_t hasEngCover;
 	
 }shipOneParams_t;
 
@@ -76,5 +75,5 @@ void ShipOneMid(shipOne_t* ship, shipOneParams_t params);
 void ShipOneWings(shipOne_t* ship, shipOneParams_t params);
 void ShipOneTwinTail(shipOne_t* ship, shipOneParams_t params);
 void ShipOneMonoTail(shipOne_t* ship, shipOneParams_t params);
-
+void ShipOneEngineCover(shipOne_t* ship, ShipOneEngCoverType_t coverType);
 #endif

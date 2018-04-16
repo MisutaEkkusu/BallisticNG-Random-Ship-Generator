@@ -18,7 +18,7 @@ void GenShipOneParams(shipOneParams_t* params){
 	params->noseHei=0.17f*params->mainHei+((rand()%80)/1000.0f);
 	params->noseLen=params->noseHei/tan(degrad*params->noseSlant);
 	
-	params->wingSpan=0.65f*params->mainWid-(rand()%100)/200.0f;
+	params->wingSpan=0.60f*params->mainWid-(rand()%80)/200.0f;
 	params->wingRoot=2.4f+(rand()%40)/100.0f;
 	params->wingTip=(0.03f+(rand()%30)/100.0f)*params->wingRoot;
 	params->wingSweep=40.0f+((rand())%40); //Calculate wingtip y as -SPAN/tan(SWEEP)
@@ -40,8 +40,10 @@ void GenShipOneParams(shipOneParams_t* params){
 	params->aBrakeEdgeOffset=0.2f;
 	
 	params->isLongWing=rand()%3; //GENERATE FEISAR WINGS
+	params->hasEngCover = rand()%2;
 	
 	params->isDualEngine=rand()%3; //Generate Twin Engine
+	params->engCoverType=rand()%2;
 	printf("Done!\n");
 
 }
@@ -184,13 +186,26 @@ void ShipOneMid(shipOne_t* ship, shipOneParams_t params){
 	//Cockpit top
 	Triangulate(&ship->mid.polys[14],&ship->mid.polys[15],12,14,15,13,1,GLASS);
 	//Cockpit back
-	Triangulate(&ship->mid.polys[16],&ship->mid.polys[17],14,16,17,15,1,GLASS);
+	
+	if(params.hasEngCover && params.engCoverType==CCANOPY){
+		Triangulate(&ship->mid.polys[16],&ship->mid.polys[17],14,16,17,15,1,DIFFUSE2);
+		if(rand()%2){
+			CreateTriangle(&ship->mid.polys[18],9,16,14,1,GLASS);
+			CreateTriangle(&ship->mid.polys[19],15,17,10,1,GLASS);
+		}
+		else{
+			CreateTriangle(&ship->mid.polys[18],9,16,14,1,DIFFUSE1);
+			CreateTriangle(&ship->mid.polys[19],15,17,10,1,DIFFUSE1);
+		}
+	}
+	else
+		Triangulate(&ship->mid.polys[16],&ship->mid.polys[17],14,16,17,15,1,GLASS);
+	
 	
 	//Cockpit sides (front mid back)
-	CreateTriangle(&ship->mid.polys[18],1,5,12,1,GLASS);
-	CreateTriangle(&ship->mid.polys[19],2,13,6,1,GLASS);
-	CreateTriangle(&ship->mid.polys[20],9,16,14,1,GLASS);
-	CreateTriangle(&ship->mid.polys[21],15,17,10,1,GLASS);
+	CreateTriangle(&ship->mid.polys[20],1,5,12,1,GLASS);
+	CreateTriangle(&ship->mid.polys[21],2,13,6,1,GLASS);
+
 	Triangulate(&ship->mid.polys[22],&ship->mid.polys[23],5,9,14,12,1,GLASS);
 	Triangulate(&ship->mid.polys[24],&ship->mid.polys[25],6,13,15,10,1,GLASS);
 	
@@ -356,6 +371,7 @@ void ShipOneTwinTail(shipOne_t* ship, shipOneParams_t params){
 		
 		TriangleFan(&ship->tail,16,14,4,8,-1,EXHAUST); //Left Exhaust
 		TriangleFan(&ship->tail,21,15,9,13,-1,EXHAUST); //Right Exhaust
+		
 	}
 	else if(params.isDualEngine==2){
 		printf("standard twin exhaust #2\n");
@@ -387,6 +403,7 @@ void ShipOneMonoTail(shipOne_t* ship, shipOneParams_t params){
 	
 	//TAIL---------------------------------------------------------------------------------------------------
 	printf("Building tail: standard single exhaust (big)\n");
+
 	
 	ship->tail.ntris=26; //26
 	ship->tail.nverts=16; //16
@@ -443,7 +460,98 @@ void ShipOneMonoTail(shipOne_t* ship, shipOneParams_t params){
 	Triangulate(&ship->tail.polys[24],&ship->tail.polys[25],15,9,13,12,1,EXHAUST); //Exhaust Bot Right Quad
 	//TriangleFan(&ship->tail,10,14,4,8,1); //Left Exhaust
 	//TriangleFan(&ship->tail,21,15,9,13,1); //Right Exhaust
-		
-	
+	if(params.hasEngCover)
+		ShipOneEngineCover(ship,params.engCoverType);
 }
 
+void ShipOneEngineCover(shipOne_t* ship, ShipOneEngCoverType_t coverType){
+	
+	//generate engine cover
+	
+	uint16_t oldnverts, oldntris;
+	
+	float t1 = (rand()%50)/100.0f + 0.3f; //cover length
+	float t2 = (rand()%20)/100.0f - 0.1f; //cover end slant
+	float h = (rand()%20)/100.0f + 0.05f; //cover height
+	float w = (rand()%20)/100.0f + 0.8f; //cover top width
+	
+	oldnverts = ship->tail.nverts;
+	oldntris = ship->tail.ntris;
+	
+	printf("Generating engine cover type %d...\n",coverType);
+	
+	switch(coverType){
+		
+		case CSIMPLE: //simple cover
+		
+			ship->tail.nverts += 4;
+			ship->tail.ntris += 4;
+			
+			ship->tail.verts = (vert_t*) realloc(ship->tail.verts,ship->tail.nverts*sizeof(vert_t));
+			ship->tail.polys = (poly_t*) realloc(ship->tail.polys,ship->tail.ntris*sizeof(poly_t));
+				
+			if(ship->tail.verts == NULL || ship->tail.polys == NULL ){
+				fprintf(stderr,"Failed to (re)allocate ship tail memory.\n");
+				exit(-1);
+			}
+			
+			
+			ship->tail.verts[oldnverts] = VLerp(t1, ship->tail.verts[1], ship->tail.verts[5]);
+			ship->tail.verts[oldnverts+1] = VLerp(t1, ship->tail.verts[2], ship->tail.verts[11]);
+			
+			ship->tail.verts[oldnverts+2] = TranslateVert(ship->tail.verts[oldnverts], 0.0f, t2, h);
+			ship->tail.verts[oldnverts+3] = TranslateVert(ship->tail.verts[oldnverts+1], 0.0f, t2, h);
+			
+			ship->tail.verts[oldnverts+2].x = w*ship->tail.verts[1].x;
+			ship->tail.verts[oldnverts+3].x = w*ship->tail.verts[2].x;
+			
+			//TRIANGLES
+			//LEFT FACE
+			CreateTriangle(&ship->tail.polys[oldntris],1,oldnverts,oldnverts+2,1,DIFFUSE2);
+			//RIGHT FACE
+			CreateTriangle(&ship->tail.polys[oldntris+1],2,oldnverts+1,oldnverts+3,1,DIFFUSE2);
+			//TOP FACE
+			Triangulate(&ship->tail.polys[oldntris+2],&ship->tail.polys[oldntris+3],1,2,oldnverts+3,oldnverts+2,1,DIFFUSE2);
+			
+		break;
+		
+		case CCANOPY:
+		
+			ship->tail.nverts += 6;
+			ship->tail.ntris += 6;
+			
+			ship->tail.verts = (vert_t*) realloc(ship->tail.verts,ship->tail.nverts*sizeof(vert_t));
+			ship->tail.polys = (poly_t*) realloc(ship->tail.polys,ship->tail.ntris*sizeof(poly_t));
+				
+			if(ship->tail.verts == NULL || ship->tail.polys == NULL ){
+				fprintf(stderr,"Failed to (re)allocate ship tail memory.\n");
+				exit(-1);
+			}
+			
+			ship->tail.verts[oldnverts] = VLerp(0.05f,ship->mid.verts[14],ship->tail.verts[1]);
+			ship->tail.verts[oldnverts+1] = VLerp(0.05f,ship->mid.verts[15],ship->tail.verts[2]);
+			
+			ship->tail.verts[oldnverts+2] = VLerp(t1, ship->tail.verts[1], ship->tail.verts[5]);
+			ship->tail.verts[oldnverts+3] = VLerp(t1, ship->tail.verts[2], ship->tail.verts[11]);
+			
+			ship->tail.verts[oldnverts+4] = TranslateVert(ship->tail.verts[oldnverts+2], 0.0f, t2, h);
+			ship->tail.verts[oldnverts+5] = TranslateVert(ship->tail.verts[oldnverts+3], 0.0f, t2, h);
+			
+			ship->tail.verts[oldnverts+4].x = w*ship->tail.verts[1].x;
+			ship->tail.verts[oldnverts+5].x = w*ship->tail.verts[2].x;		
+			
+			Triangulate(&ship->tail.polys[oldntris],&ship->tail.polys[oldntris+1],1,oldnverts,oldnverts+4,oldnverts+2,1,DIFFUSE2);
+			
+			Triangulate(&ship->tail.polys[oldntris+2],&ship->tail.polys[oldntris+3],2,oldnverts+1,oldnverts+5,oldnverts+3,1,DIFFUSE2);
+			
+			Triangulate(&ship->tail.polys[oldntris+4],&ship->tail.polys[oldntris+5],oldnverts,oldnverts+1,oldnverts+5,oldnverts+4,1,DIFFUSE2);	
+		break;
+		
+		case CGILLS:
+			
+			break;
+		
+	}
+
+	
+}

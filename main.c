@@ -5,9 +5,10 @@
 int main(int argc, char* argv[]){
 	
 	uint32_t rngseed = time(NULL);
+	shipOne_t ship = {0};
 	printf("Random Seed: %u\n",rngseed);
 	srand(rngseed);
-
+	
 	GenShipOneParams(&shipParams);
 	MakeShipOne(&ship,shipParams);
 	MergeMesh(ship.nose, ship.mid, &ship.obj,0);
