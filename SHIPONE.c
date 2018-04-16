@@ -198,8 +198,11 @@ void ShipOneMid(shipOne_t* ship, shipOneParams_t params){
 			CreateTriangle(&ship->mid.polys[19],15,17,10,1,DIFFUSE1);
 		}
 	}
-	else
+	else{
 		Triangulate(&ship->mid.polys[16],&ship->mid.polys[17],14,16,17,15,1,GLASS);
+		CreateTriangle(&ship->mid.polys[18],9,16,14,1,GLASS);
+		CreateTriangle(&ship->mid.polys[19],15,17,10,1,GLASS);
+	}
 	
 	
 	//Cockpit sides (front mid back)
@@ -371,7 +374,8 @@ void ShipOneTwinTail(shipOne_t* ship, shipOneParams_t params){
 		
 		TriangleFan(&ship->tail,16,14,4,8,-1,EXHAUST); //Left Exhaust
 		TriangleFan(&ship->tail,21,15,9,13,-1,EXHAUST); //Right Exhaust
-		
+		if(params.hasEngCover)
+			ShipOneEngineCover(ship,params.engCoverType);
 	}
 	else if(params.isDualEngine==2){
 		printf("standard twin exhaust #2\n");
