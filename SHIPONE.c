@@ -5,7 +5,7 @@ void GenShipOneParams(shipOneParams_t* params){
 	printf("Generating params!\n");
 	degrad=M_PI/180.0f;
 	
-	params->mainLen=10.0f+((rand()%100)/100.0f);
+	params->mainLen=10.0f+((rand()%300)/100.0f);
 	
 	params->mainWid=0.22f*params->mainLen+((rand()%10)/100.0f);
 	

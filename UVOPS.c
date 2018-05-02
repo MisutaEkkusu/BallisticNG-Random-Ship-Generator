@@ -487,6 +487,8 @@ void GenerateUVs(mesh_t* shipmesh){
 
 			for(j=0;j<NUMSUBPARTS;j++){
 				subgroup = GenerateSubGroup(shipmesh,UVpolygroup,nUVpolys,j,&nSubpolys);
+				if(subgroup == NULL)
+					continue;
 				
 				UVpolygroupbounds = GetPolyGroupBounds(shipmesh,subgroup,nSubpolys);
 				//Get Best Projection plane

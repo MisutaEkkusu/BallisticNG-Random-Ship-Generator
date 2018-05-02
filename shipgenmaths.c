@@ -22,6 +22,42 @@ vert_t TranslateVert(vert_t vert, float x, float y, float z){
 	
 }
 
+vert_t MirrorVert(vert_t vert, char axis){
+	
+	switch(axis){
+		
+		case 'x':
+			vert.x = -vert.x;
+			break;
+			
+		case 'y':
+			vert.y = -vert.y;
+			break;
+			
+		case 'z':
+			vert.z = -vert.z;
+			break;
+			
+		default:
+		
+			break;
+		
+	}
+	return vert;
+	
+}
+
+vert_t ScaleVert(vert_t vert, float sx, float sy, float sz){
+	vert_t ret;
+	
+	ret.x=vert.x*sx;
+	ret.y=vert.y*sy;
+	ret.z=vert.z*sz;
+	
+	return ret;
+	
+}
+
 void CreateTriangle(poly_t* tri1,uint16_t v0, uint16_t v1, uint16_t v2, int8_t dir, texType_t type){
 	/*
 		Generate a triangle from 3 vertices

@@ -125,6 +125,9 @@ float max(mesh_t* mesh, char axis);
 float min(mesh_t* mesh, char axis);
 
 vert_t TranslateVert(vert_t vert, float x, float y, float z);
+vert_t MirrorVert(vert_t vert, char axis);
+vert_t ScaleVert(vert_t vert, float sx, float sy, float sz);
+
 vert_t VLerp(float t, vert_t a, vert_t b);
 uint8_t VertexCoincident(vert_t v1, vert_t v2);
 

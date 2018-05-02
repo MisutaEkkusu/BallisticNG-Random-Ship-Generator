@@ -21,7 +21,7 @@ void MeshToObj(mesh_t* mesh, char* filename){
 	fprintf(fp,"#%d Vertices\n",mesh->nverts);
 	
 	for(i=0;i<mesh->nnorms;i++){
-		fprintf(fp,"vn %f %f %f\n",-mesh->vnorms[i].x,mesh->vnorms[i].z,-mesh->vnorms[i].y);
+		fprintf(fp,"vn %f %f %f\n",-mesh->vnorms[i].x,-mesh->vnorms[i].z,-mesh->vnorms[i].y);
 		
 	}
 	fprintf(fp,"#%d Normals\n",mesh->nnorms);
@@ -34,16 +34,41 @@ void MeshToObj(mesh_t* mesh, char* filename){
 	
 	fprintf(fp,"usemtl ShipMaterial\ns 1\n");
 	for(i=0;i<mesh->ntris;i++){
-		
-		fprintf(fp,"f ");
-		for(j=0;j<3;j++){
-			
-			fprintf(fp,"%d/%d/%d",mesh->polys[i].vert[j]+1,mesh->polys[i].uvindx[j]+1,mesh->polys[i].vnindx[j]+1);
-			if(j!=2){
-				fprintf(fp," ");
+		if(mesh->nuvs>0 && mesh->nnorms>0){
+			fprintf(fp,"f ");
+			for(j=0;j<3;j++){
+				
+				fprintf(fp,"%d/%d/%d",mesh->polys[i].vert[j]+1,mesh->polys[i].uvindx[j]+1,mesh->polys[i].vnindx[j]+1);
+				if(j!=2){
+					fprintf(fp," ");
+				}
 			}
+			fprintf(fp,"\n");
 		}
-		fprintf(fp,"\n");
+		else if(mesh->nnorms>0){
+			
+			fprintf(fp,"f ");
+			for(j=0;j<3;j++){
+				
+				fprintf(fp,"%d//%d",mesh->polys[i].vert[j]+1,mesh->polys[i].vnindx[j]+1);
+				if(j!=2){
+					fprintf(fp," ");
+				}
+			}
+			fprintf(fp,"\n");
+		}
+		else{
+			
+			fprintf(fp,"f ");
+			for(j=0;j<3;j++){
+				
+				fprintf(fp,"%d",mesh->polys[i].vert[j]+1);
+				if(j!=2){
+					fprintf(fp," ");
+				}
+			}
+			fprintf(fp,"\n");
+		}
 	}
 	fprintf(fp,"#%d Triangles\n",mesh->ntris);
 	fclose(fp);

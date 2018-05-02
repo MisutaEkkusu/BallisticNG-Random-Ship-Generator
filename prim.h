@@ -2,6 +2,7 @@
 #define _PRIM_H_
 
 #include "SHIPONE.h"
+#include "SHIPPROTO.h"
 
 #define MAXCVERT 100 //maximum coincident vertex ammount
 
